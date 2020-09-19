@@ -8,17 +8,30 @@ function setWebhook() {
   //Logger.log(response.getContentText());
 }
 
-function sendMessage(chat_id, text) {
-  var url = tgurl + "/sendMessage?chat_id=" + chat_id + "&text="+ text;
+function setWebhook() {
+  var url = tgurl + "/setWebhook?url=" + webAppUrl;
   var response = UrlFetchApp.fetch(url);
-  //Logger.log(response.getContentText()); 
 }
 
-//function getDate() {
-// var date = new Date;
-// var simplified_date = date.getDate() + "/" + date.getMonth(); 
-// Logger.log(simplified_date);
-//}
+/*function sendMessage(chat_id, text) {
+  var url = tgurl + "/sendMessage?chat_id=" + chat_id + "&text="+ text;
+  var response = UrlFetchApp.fetch(url);
+}*/
+
+function sendMessage(chat_id, text, keyBoard) {
+  var data = {
+    method: "post",
+    payload: {
+      method: "sendMessage",
+      chat_id: String(chat_id),
+      text: text,
+      parse_mode: "HTML",
+      reply_markup: JSON.stringify(keyBoard)
+    }
+  };
+  UrlFetchApp.fetch(tgurl + "/", data)
+}
+
 
 function doPost(e) {
   var contents = JSON.parse(e.postData.contents);
@@ -66,8 +79,28 @@ function doPost(e) {
     var response = "your total sleep time: " + totalhours/records;
     sendMessage(chat_id,response);
     
+  } else if(split_text[0] == "useful") {
+    var response = "yHere'some useful info on sleep health: " + "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+    sendMessage(chat_id,response);
   } else {
-    sendMessage(chat_id,response_text);
+    var keyBoard = {
+      "inline_keyboard": [
+        [{
+          "text": "Button 1",
+          "callback_data": "budget"
+        }],
+        [{
+          "text": "Button 2",
+          "callback_data": "budget"
+        }],
+        [{
+          "text": "Button 3",
+          "callback_data": "budget"
+        }]
+       ]
+    };
+    
+    return sendMessage(chat_id,response_text);
     
   }
   
